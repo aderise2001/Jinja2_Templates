@@ -1,4 +1,4 @@
-configure terminal
+
 {% for item in devices[ansible_host] %}
   interface {{ item.name }}
     description {{ item.description }}
