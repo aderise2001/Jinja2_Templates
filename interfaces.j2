@@ -1,7 +1,7 @@
 {% for item in devices[ansible_host] %}
 interface {{ item.name }}
   description {{ item.description }}
-  ip address {{ item.address }} {{ item.mask }}
+  ipv4 address {{ item.address }}{{ item.prefix_length }}
 {% if item.mbps != "" %}
   service-policy input {{ item.mbps }}Mb
   service-policy output {{ item.mbps }}Mb
