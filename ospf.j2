@@ -1,4 +1,4 @@
-{% for node in nodes %}
+{% for node in nodes[ansible_host] %}
 {% if node.ospf is defined %}
     ospf {
         area 0 {
