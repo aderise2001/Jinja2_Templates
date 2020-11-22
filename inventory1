@@ -1,0 +1,5 @@
+[linux_hosts]
+osboxes ansible_host=192.168.254.170 ansible_user=osboxes ansible_password=osboxes.org
+centos ansible_host=192.168.254.156 ansible_user=adedavid ansible_password=Avensis123@ ansible_sudo_pass=Avensis123@
+
+
