@@ -1,0 +1,44 @@
+---
+
+nodes:
+- R1:
+   rid: 10.100.1.1
+   links:
+     ge-0/0/0.0: {ip: 172.16.1.1, prefix-length: 24, cost: 10, vlan: 0}
+     ge-0/0/1.0: {ip: 172.16.2.1, prefix-length: 24, cost: 10, vlan: 0}
+   loopback:
+     id: 10
+     ip: 10.100.1.1
+     prefix: 32
+   bgp:
+    ibgp:
+     rr: true
+     peers:
+       - 10.100.1.2
+    af:
+     - inet
+     - inet-vpn
+   ospf:
+     area: 0
+     network: p2p
+
+- R2:
+   rid: 10.100.1.2
+   links:
+     ge-0/0/0.0: {ip: 172.16.1.2, prefix-length: 24, cost: 10, vlan: 0}
+     ge-0/0/1.0: {ip: 172.16.2.2, prefix-length: 24, cost: 10, vlan: 0}
+   loopback:
+     id: 10
+     ip: 10.100.1.2
+     prefix: 32
+   bgp:
+    ibgp:
+     rr: false
+     peers:
+       - 10.100.1.1
+    af:
+     - inet
+     - inet-vpn
+   ospf:
+     area: 0
+     network: p2p

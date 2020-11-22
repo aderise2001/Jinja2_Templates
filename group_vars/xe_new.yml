@@ -1,0 +1,14 @@
+---
+devices:
+  ios-xe-mgmt.cisco.com:
+    - name: GigabitEthernet3
+      address: 192.168.200.1
+      description: Configured Today using Netconf
+      mask: 255.255.255.0
+      mbps: '10'
+    - name: Loopback110
+      address: 10.10.10.1
+      description: New Loopback Intf
+      mask: 255.255.255.255
+      mbps: ''
+
