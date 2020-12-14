@@ -1,0 +1,104 @@
+# This is a playbook
+---
+- name: Run this tasks
+  hosts: linux_hosts
+  gather_facts: no
+    
+  vars:
+   env: staging
+   app_version: v1.1
+  vars_files:
+    - './group_vars/users.yml'
+
+  tasks:
+    
+    - name: Using command module 
+      command: 
+         touch $FILENAME
+      args:
+       chdir: $TARGET_DIR
+      environment:
+        TARGET_DIR: /home/{{ ansible_user }} 
+        FILENAME: test999
+      become: true   
+    - name: install php7.2
+      apt:
+        name: php7.2
+        state: latest
+        update_cache: true
+      become: true
+      when: inventory_hostname == "osboxes1"
+    - name: install Remi Repository for php7.2
+      yum:
+        name: "{{ item }}"
+        state: latest
+      become: true
+      loop:
+       - epel-release
+       - yum-utils
+       - http://rpms.remirepo.net/enterprise/remi-release-7.rpm   
+      when: inventory_hostname == "centos1"
+    - name: Now installing php7.2 on centos
+      yum:
+       name: php
+       state: present
+      become: true
+      when: inventory_hostname == "centos"
+    - name: Check if php7.3 is installed
+      shell: php -v
+      register: output
+    - name: Print output to confirm successful installation of php7.3 on centos
+      debug:
+        msg: "{{ output.stdout_lines[0] }}"
+    - name: echo major and minor versions
+      shell: echo `output.stdout_lines[0] | cut -d ' ' -f 2`
+      register: output2
+    - name: Print version
+      debug: msg = "{{ output2 }}"
+    - name: create .gitconfig for each user
+      template:
+        src: .gitconfig.j2
+        dest: "/home/{{ user.username }}/.gitconfig"
+        owner: "{{ user.username }}"
+        group: "{{ user.username }}"
+        mode: 0644
+      become: true
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: user
+    - name: ensure users exist
+      user:
+        name: "{{ user.username }}"
+        comment: "{{ user.name }}"
+        state: present
+      become: true
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: user
+    - name: run a shell command
+      shell: pwd
+      register: home_dir
+    - name: Print the result here
+      debug:
+        msg: "The output from host {{inventory_hostname}} is: {{home_dir.stdout_lines[0]}} "
+    - name: template file onto remote hosts
+      template:
+        src: "{{ item }}.j2"
+        dest: "{{ home_dir.stdout_lines[0] }}/{{ item }}.conf"
+        #owner: {{ ansible_user }}
+        #group: {{ ansible_user }}
+        mode: 0600
+      become: true
+      loop:
+       - jinja_temp
+       - jinja_version
+    - name: Create directory
+      file:
+       path: /home/{{ ansible_user }}/test_directory
+       state: directory 
+     
+    - name: Fetch a file
+      fetch:
+        src: /home/{{ ansible_user }}/.ssh/known_hosts
+        dest: Fetched  
+      
